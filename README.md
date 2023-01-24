@@ -7,7 +7,7 @@
 
 *Приведите скриншот команды 'curl -X GET 'localhost:9200/_cluster/health?pretty', сделанной на сервере с установленным Elasticsearch. Где будет виден нестандартный cluster_name*.
 
-![](../img/q1.png)
+![](./img/q1.png)
 ---
 
 ### Задание 2. Kibana
@@ -17,7 +17,7 @@
 *Приведите скриншот интерфейса Kibana на странице http://<ip вашего сервера>:5601/app/dev_tools#/console, где будет выполнен запрос GET /_cluster/health?pretty*.
 
 
-![](../img/q2.png)
+![](./img/q2.png)
 ---
 
 ### Задание 3. Logstash
@@ -35,24 +35,43 @@
 Содержимое файла ниже
 
 input {
+
   file {
+  
     path => "/var/log/nginx/access.log"
+    
     start_position => "beginning"
-  }
+     
+ }
+ 
 }
+
 filter {
-    grok {
+
+  grok {
+  
         match => { "message" => "%{IPORHOST:remote_ip} - %{DATA:user_name}\[%{HTTPDATE:access_time}\] \"%{WORD:http_method} %{DATA:url}HTTP/%{NUMBER:http_version}\" %{NUMBER:response_code} %{NUMBER:body_sent_bytes}\"%{DATA:referrer}\" \"%{DATA:agent}\"" }
+        
     }
+    
     mutate {
+    
         remove_field => [ "host" ]
+        
     }
+    
 }
+
 output {
+
     elasticsearch {
+    
         hosts => "84.201.139.232:9200"
+        
         data_stream => "true"
+        
     }
+    
 }
 
 выполнил команду systemctl restart logstash
